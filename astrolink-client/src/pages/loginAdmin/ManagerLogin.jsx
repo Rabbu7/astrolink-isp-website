@@ -3,6 +3,7 @@ import React, { useContext } from "react";
 import AuthContext from "../../context/AuthContext/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import managerLottieData from "../../assets/lottie/managerlogin2.json";
+import Swal from "sweetalert2";
 
 const ManagerLogin = () => {
   const { signInUser } = useContext(AuthContext); // Access the signInUser function from AuthContext
@@ -17,6 +18,7 @@ const ManagerLogin = () => {
 
     signInUser(email, password)
       .then((result) => {
+        localStorage.setItem("manager-email", email);
         console.log("signed in fb", result.user);
 
         const lastSignInTime = result?.user?.metadata?.lastSignInTime; // Get the last sign-in time of the user
@@ -32,6 +34,14 @@ const ManagerLogin = () => {
           .then((res) => res.json())
           .then((data) => {
             console.log("signed in info updated to db", data); // Handle the response from the server
+            Swal.fire({
+              title: "Sweet!",
+              text: "Welcome Home, Manager",
+              imageUrl: "https://unsplash.it/400/200",
+              imageWidth: 400,
+              imageHeight: 200,
+              imageAlt: "Custom image",
+            });
           });
 
         navigate("/manager");

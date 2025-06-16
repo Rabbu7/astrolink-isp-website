@@ -27,24 +27,45 @@ const RecentComplaints = () => {
   return (
     <DashboardLayout role="customer">
       <div className="p-6 max-w-4xl mx-auto">
-        <h2 className="text-xl font-bold mb-4">My Complaints</h2>
-        <ul className="space-y-3">
-          {complaints.map((c) => (
-            <li key={c._id} className="p-3 border rounded bg-gray-600 shadow-sm">
-              <p>
-                <strong>Issue:</strong> {c.issue}
-              </p>
-              <p>
-                <strong>Status:</strong> {c.status}
-              </p>
-              {c.assignedTo && (
-                <p>
-                  <strong>Assigned Technician:</strong> {c.assignedTo}
-                </p>
+        <div className="overflow-x-auto rounded-box border border-amber-600 bg-[#0e131e73]">
+          <div>
+            <h2 className="text-xl font-bold m-4">My Complaints</h2>
+          </div>
+          <table className="table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Issue</th>
+                <th>Status</th>
+                <th>Complain Time</th>
+                <th>Assigned Technician</th>
+              </tr>
+            </thead>
+            <tbody>
+              {complaints.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="text-center">
+                    No complaints found.
+                  </td>
+                </tr>
+              ) : (
+                complaints.map((c, idx) => (
+                  <tr key={c._id}>
+                    <th>{idx + 1}</th>
+                    <td>{c.issue}</td>
+                    <td>
+                      <span className="badge badge-outline badge-success">
+                        {c.status}
+                      </span>
+                    </td>
+                    <td>{c.createdAt}</td>
+                    <td>{c.assignedTo || "N/A"}</td>
+                  </tr>
+                ))
               )}
-            </li>
-          ))}
-        </ul>
+            </tbody>
+          </table>
+        </div>
       </div>
     </DashboardLayout>
   );

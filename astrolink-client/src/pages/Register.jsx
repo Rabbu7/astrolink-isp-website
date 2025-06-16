@@ -3,6 +3,7 @@ import React, { useContext } from "react";
 import RegisterLottieData from "../assets/lottie/satelite2.json";
 import AuthContext from "../context/AuthContext/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const Register = () => {
   const { createUser } = useContext(AuthContext); // Access the createUser function from AuthContext
@@ -27,7 +28,7 @@ const Register = () => {
         console.log("result created in fb", result.user);
 
         const createdAt = result?.user?.metadata?.creationTime; // Get the creation time of the user
-        const newUser = { name, email, role:"customer", createdAt }; // Create a new user object with name and email
+        const newUser = { name, email, role: "customer", createdAt }; // Create a new user object with name and email
 
         // Here you can handle the user data, e.g., save it to the database
         fetch("http://localhost:5000/users", {
@@ -40,6 +41,12 @@ const Register = () => {
           .then((res) => res.json())
           .then((data) => {
             console.log("user created to db", data);
+
+            Swal.fire({
+              title: "You have registered Successfully!!",
+              icon: "success",
+              draggable: true,
+            });
           });
 
         navigate("/customer");

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import DashboardLayout from "../../../components/DashboardLayout";
+import Swal from "sweetalert2";
 
 const AssignTechnician = () => {
   const [complaints, setComplaints] = useState([]);
@@ -36,53 +37,78 @@ const AssignTechnician = () => {
 
     const data = await res.json();
     if (data.modifiedCount > 0) {
-      alert("Technician Assigned!");
+      Swal.fire({
+        position: "top-end",
+        icon: "success",
+        title: "Successfully Assigned to the Technician",
+        showConfirmButton: false,
+        timer: 2000,
+      });
       // Refresh complaints
       fetch("http://localhost:5000/complaints")
         .then((res) => res.json())
         .then((data) => {
-        console.log("Updated complaints:", data);
-        setComplaints([]);
-        setTimeout(() => setComplaints(data), 0);
-      });
+          console.log("Updated complaints:", data);
+          setComplaints([]);
+          setTimeout(() => setComplaints(data), 0);
+        });
     }
   };
   return (
     <DashboardLayout role="manager">
-      <div className="max-w-4xl mx-auto p-6 bg-white rounded shadow">
-        <h2 className="text-xl font-bold mb-4 text-gray-700">Manage Complaints</h2>
-        <table className="w-full border">
+      <div className="overflow-x-auto rounded-box border border-base-content/5 bg-[#0e131ecc] max-w-4xl mx-auto p-6">
+        <h2 className="text-xl font-bold mb-4 ">Manage Complaints</h2>
+        <table className="table">
           <thead>
-            <tr className="bg-gray-600 text-left">
-              <th className="p-2">Customer Email</th>
-              <th className="p-2">Issue</th>
-              <th className="p-2">Status</th>
-              <th className="p-2">Technician</th>
-              <th className="p-2">Assign</th>
+            <tr>
+              <th></th>
+              <th>Customer Email</th>
+              <th>Issue</th>
+              <th>Status</th>
+              <th>Technician</th>
+              <th>Assign</th>
             </tr>
           </thead>
           <tbody>
-            {complaints.map((c) => (
-              <tr key={c._id + (c.assignedTo || "")} className="border-t bg-gray-600">
-                <td className="p-2">{c.email}</td>
-                <td className="p-2">{c.issue}</td>
-                <td className="p-2">{c.status || "pending"}</td>
-                <td className="p-2">{c.assignedTo || "Not Assigned"}</td>
-                <td className="p-2">
-                  <select
-                    value={c.assignedTo ?? ""}
-                    onChange={(e) => handleAssign(c._id, e.target.value)}
-                    className="border p-1"
-                  >
-                    <option disabled value="">
-                      Select Technician
-                    </option>
-                    {technicians.map((tech) => (
-                      <option className="bg-gray-700" key={tech._id} value={tech.email}>
-                        {tech.name} ({tech.email})
+            {complaints.map((c, idx) => (
+              <tr key={c._id + (c.assignedTo || "")}>
+                <th>{idx + 1}</th>
+                <td>{c.email}</td>
+                <td>{c.issue}</td>
+                <td>
+                  <span className="badge badge-outline badge-error">
+                    {c.status || "pending"}
+                  </span>
+                </td>
+                <td>{c.assignedTo ? `${c.assignedTo}` : "Not Assigned"}</td>
+                <td>
+                  {c.status === "resolved" ? (
+                    <span>
+                      <span className="badge badge-outline badge-success">
+                        Completed
+                      </span>
+                    </span>
+                  ) : (
+                    <select
+                      value={c.assignedTo ?? ""}
+                      onChange={(e) => handleAssign(c._id, e.target.value)}
+                      className="border p-1"
+                      disabled={c.status === "resolved"}
+                    >
+                      <option disabled value="">
+                        Select Technician
                       </option>
-                    ))}
-                  </select>
+                      {technicians.map((tech) => (
+                        <option
+                          className="bg-gray-700"
+                          key={tech._id}
+                          value={tech.email}
+                        >
+                          {tech.name} ({tech.email})
+                        </option>
+                      ))}
+                    </select>
+                  )}
                 </td>
               </tr>
             ))}

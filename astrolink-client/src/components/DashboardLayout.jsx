@@ -1,8 +1,9 @@
 import label from "daisyui/components/label";
 import React, { useContext, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext/AuthContext";
 import {
+  Archive,
   CheckCircle,
   ClipboardList,
   Home,
@@ -13,19 +14,30 @@ import {
   Wrench,
   X,
 } from "lucide-react";
+import Swal from "sweetalert2";
 
 const DashboardLayout = ({ children, role }) => {
   const location = useLocation();
   const { signOutUser, user } = useContext(AuthContext);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleSignOut = () => {
     signOutUser()
       .then(() => {
+        localStorage.removeItem("customer-email");
+        localStorage.removeItem("technician-email");
+        localStorage.removeItem("manager-email");
         console.log("successfully signed out");
+        Swal.fire({
+          title: "Signed Out!",
+          icon: "success",
+          draggable: true,
+        });
+        navigate("/");
       })
       .catch((error) => {
-        console.log("failed to sign out");
+        console.log("failed to sign out", error);
       });
   };
 
@@ -40,14 +52,14 @@ const DashboardLayout = ({ children, role }) => {
       },
       {
         to: "/showComplaint",
-        label: "Recent Complaint",
-        icon: <Send size={18} />,
+        label: "Recent Complaints",
+        icon: <Archive size={18} />,
       },
     ],
     manager: [
       {
         to: "/manager",
-        label: "All Complaints",
+        label: "Dashboard",
         icon: <ClipboardList size={18} />,
       },
       { to: "/assign", label: "Assign Technician", icon: <Wrench size={18} /> },
@@ -80,7 +92,13 @@ const DashboardLayout = ({ children, role }) => {
           <div>
             <p className="font-semibold text-lg capitalize">{role}</p>
             <p className="text-sm text-gray-400">
-              {user?.email || "user@email.com"}
+              {role === "customer"
+                ? localStorage.getItem("customer-email") || user?.email
+                : role === "manager"
+                ? localStorage.getItem("manager-email") || user?.email
+                : role === "technician"
+                ? localStorage.getItem("technician-email") || user?.email
+                : user?.email}
             </p>
           </div>
         </div>
@@ -112,20 +130,29 @@ const DashboardLayout = ({ children, role }) => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 bg-gray-100 p-6 overflow-y-auto">
+      <div
+        className="flex-1 p-6 overflow-y-auto"
+        style={{
+          backgroundImage: "url('src/assets/bgdash.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
         {/* Topbar */}
-        <div className="bg-white shadow flex items-center justify-between p-4 sticky top-0 z-10">
+        <div className=" shadow flex items-center justify-between p-4 sticky top-0 z-10">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="md:hidden text-gray-700"
           >
             {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
-          <div className="text-gray-700 font-semibold text-lg capitalize">
+          <div className="text-amber-50  font-bold text-3xl capitalize">
             Welcome, {role}
           </div>
         </div>
-        <div className="bg-base-100 p-4 shadow rounded">{children}</div>
+        <div className="border bg-[#76d1f535] p-4 shadow rounded-lg">
+          {children}
+        </div>
       </div>
     </div>
   );

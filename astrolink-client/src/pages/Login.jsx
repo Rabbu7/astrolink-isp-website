@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import loginLottieData from "../assets/lottie/login.json";
 import Lottie from "lottie-react";
 import AuthContext from "../context/AuthContext/AuthContext";
+import Swal from "sweetalert2";
 
 const Login = () => {
   const { signInUser } = useContext(AuthContext); // Access the signInUser function from AuthContext
@@ -17,6 +18,7 @@ const Login = () => {
 
     signInUser(email, password)
       .then((result) => {
+        localStorage.setItem("customer-email", email);
         console.log("signed in fb", result.user);
 
         const lastSignInTime = result?.user?.metadata?.lastSignInTime; // Get the last sign-in time of the user
@@ -32,6 +34,11 @@ const Login = () => {
           .then((res) => res.json())
           .then((data) => {
             console.log("signed in info updated to db", data); // Handle the response from the server
+            Swal.fire({
+              title: "You are signed in successfully!",
+              icon: "success",
+              draggable: true,
+            });
           });
 
         navigate("/customer");

@@ -90,32 +90,33 @@ async function run() {
       res.send(result);
     });
 
-    // Get complaints (all)
-    app.get("/complaints", async (req, res) => {
-      const result = await complaintCollection.find().toArray();
-      res.send(result);
-    });
-
     // GET complaints assigned to specific technician
     app.get("/complaints", async (req, res) => {
-      const assignedTo = req.query.assignedTo;
-      let filter = {};
-      if (assignedTo) {
-        filter = { assignedTo };
+      try {
+        const { email, assignedTo } = req.query;
+        let filter = {};
+
+        if (email) {
+          filter.email = email;
+        }
+
+        if (assignedTo) {
+          filter = { assignedTo };
+        }
+        const result = await complaintCollection.find(filter).toArray();
+        res.send(result);
+      } catch (error) {
+        console.error("❌ GET complaints error:", error.message);
+        res.status(500).send({ error: error.message });
       }
-      const result = await complaintCollection.find(filter).toArray();
-      res.send(result);
     });
 
     // Assign Technician
     app.patch("/complaints/:id", async (req, res) => {
       try {
         const id = req.params.id;
-        const status = req.body.status;
-
-         console.log("PATCH BODY:", req.body);
-
-        
+        const { status, assignedTo } = req.body;
+        console.log("PATCH BODY:", req.body);
 
         if (!ObjectId.isValid(id)) {
           return res.status(400).send({ error: "Invalid ID format" });
@@ -123,11 +124,11 @@ async function run() {
 
         const filter = { _id: new ObjectId(id) };
         const updateDoc = {
-          $set: { 
-               status: status,
-               assignedTo: req.body.assignedTo,
-           },
+          $set: {},
         };
+
+        if (status) updateDoc.$set.status = status;
+        if (assignedTo) updateDoc.$set.assignedTo = assignedTo; // Only set if provided
 
         const result = await complaintCollection.updateOne(filter, updateDoc);
         console.log("MongoDB update result:", result);
