@@ -128,7 +128,7 @@ async function run() {
         };
 
         if (status) updateDoc.$set.status = status;
-        if (assignedTo) updateDoc.$set.assignedTo = assignedTo; // Only set if provided
+        if (assignedTo) updateDoc.$set.assignedTo = assignedTo; 
 
         const result = await complaintCollection.updateOne(filter, updateDoc);
         console.log("MongoDB update result:", result);
