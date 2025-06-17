@@ -1,6 +1,6 @@
 # AstroLink
 
-## A ROLE-BASED ISP Complaint Management System Web Application using MERN stack
+AstroLink is a MERN stack web application of ROLE-BASED ISP Complaint Management System
 
 ---
 
