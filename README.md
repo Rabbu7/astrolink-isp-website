@@ -1,3 +1,5 @@
+![](./screenshot/astrolink.png)
+
 # AstroLink
 
 ## A ROLE-BASED ISP Complaint Management System Web Application using MERN stack
@@ -79,5 +81,10 @@
 - Integrated Firebase authentication.
 - Performed real-time state updates with MongoDB & React hooks.
 
+---
+
+## 🤝 Contributors
+
+![](./screenshot/contributors.jpg)
 
 Feel free to contribute or raise issues!
